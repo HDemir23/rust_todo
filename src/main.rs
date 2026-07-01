@@ -40,17 +40,10 @@ fn read_input(message: &str) -> String {
 
 fn add_todo(id: &mut u32, todos: &mut Vec<Todo>) {
     let title = read_input("title please");
-
-
     let task = read_input("please task");
 
 
-    todos.push(Todo {
-        id: *id,
-        title,
-        task,
-        status: false,
-    });
+    todos.push(Todo::new(*id, title, task));
 
     *id += 1;
 
@@ -74,7 +67,7 @@ fn finished_todo(todos: &mut Vec<Todo>) {
         None => return,
     };
 
-    todos[index].status = true;
+    todos[index].mark_done();
     println!("Task Completed");
 }
 
