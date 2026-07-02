@@ -36,6 +36,10 @@ fn main() {
                 delete_todo(&mut todos);
                 save_todos(&todos);
             }
+            "edit" => {
+                edit_todo(&mut todos);
+                save_todos(&todos);
+            }
             "q" => {
                 save_todos(&todos);
                 break;
@@ -73,10 +77,16 @@ fn add_todo(id: &mut u32, todos: &mut Vec<Todo>) {
 
 
 fn list_todo(todos: &Vec<Todo>) {
+    if todos.is_empty() {
+        println!("No todos found");
+        return;
+    }
     for todo in todos {
+        let status = if todo.status { "Done" } else { "pending" };
+
         println!(
-            "{} - {} - {} - {}",
-            todo.id, todo.title, todo.task, todo.status
+            "[{}] - {} - {} - Task: {}",
+            todo.id, status, todo.title, todo.task
         );
     }
 }
@@ -105,4 +115,20 @@ fn delete_todo(todos: &mut Vec<Todo>) {
     } else {
         println!("U should finish your task to delete it");
     }
+}
+
+
+fn edit_todo(todos: &mut Vec<Todo>) {
+    let index = match select_todo_index(todos) {
+        Some(i) => i,
+        None => return,
+    };
+
+    let new_title = read_input("Please enter a new title");
+    let new_task = read_input("Please enter a new task");
+
+    todos[index].title = new_title;
+    todos[index].task = new_task;
+
+    println!("Task Updated");
 }
