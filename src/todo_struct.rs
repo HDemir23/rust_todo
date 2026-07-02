@@ -1,3 +1,6 @@
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct Todo {
     pub id: u32,
     pub title: String,
@@ -18,5 +21,9 @@ impl Todo {
 
     pub fn mark_done(&mut self) {
         self.status = true;
+    }
+
+    pub fn is_done(&self) -> bool {
+        self.status
     }
 }

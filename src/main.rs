@@ -1,22 +1,43 @@
 mod select_index;
 mod todo_struct;
+mod serde_func;
 
 use crate::select_index::select_todo_index;
+use crate::serde_func::{load_todos, save_todos};
 use std::io::stdin;
 use todo_struct::Todo;
 
+
 fn main() {
-    let mut todos: Vec<Todo> = Vec::new();
-    let mut next_id: u32 = 1;
+    let mut todos: Vec<Todo> = load_todos();
+
+    let mut next_id: u32 = todos
+        .iter()
+        .map(|todo| todo.id)
+        .max()
+        .unwrap_or(0) + 1;
 
     loop {
         let command = read_input("command: add / list / done / delete / q");
         match command.as_str() {
-            "add" => add_todo(&mut next_id, &mut todos),
-            "list" => list_todo(&todos),
-            "done" => finished_todo(&mut todos),
-            "delete" => delete_todo(&mut todos),
+            "add" => {
+                add_todo(&mut next_id, &mut todos);
+                save_todos(&todos);
+            }
+            "list" => {
+                list_todo(&todos);
+                save_todos(&todos);
+            }
+            "done" => {
+                finished_todo(&mut todos);
+                save_todos(&todos);
+            }
+            "delete" => {
+                delete_todo(&mut todos);
+                save_todos(&todos);
+            }
             "q" => {
+                save_todos(&todos);
                 break;
             }
             _ => {
@@ -78,7 +99,7 @@ fn delete_todo(todos: &mut Vec<Todo>) {
         None => return,
     };
 
-    if todos[index].status == true {
+    if todos[index].is_done() {
         todos.remove(index);
         println!("Task Deleted");
     } else {
